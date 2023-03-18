@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { ReactComponent as ArrowRightIcon } from '../assets/svg/keyboardArrowRightIcon.svg';
 import visibilityIcon from '../assets/svg/visibilityIcon.svg';
 
@@ -16,10 +18,29 @@ const SignIn = () => {
 
   const onChange = (e) => {
     setFormData((prevState) => ({
-      ...prevState, 
+      ...prevState,
       [e.target.id]: e.target.value,
-    }))
+    }));
     //
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const auth = getAuth();
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+
+      if (userCredential.user) {
+        navigate('/');
+      }
+    } catch (error) {
+      toast.error('Incorrect User Credentials.')
+    }
   };
 
   return (
@@ -27,50 +48,56 @@ const SignIn = () => {
       <div className='pageContainer'>
         <header>
           <p className='pageHeader'>Welcome Back!</p>
-            <form>
+          <form onSubmit={onSubmit}>
+            <input
+              type='email'
+              className='emailInput'
+              placeholder='Email'
+              id='email'
+              value={email}
+              onChange={onChange}
+            />
+
+            <div className='passwordInputDiv'>
               <input
-                type='email'
-                className='emailInput'
-                placeholder='Email'
-                id='email'
-                value={email}
+                type={showPassword ? 'text' : 'password'}
+                className='passwordInput'
+                placeholder='Password'
+                id='password'
+                value={password}
                 onChange={onChange}
               />
-
-              <div className='passwordInputDiv'>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  className='passwordInput'
-                  placeholder='Password'
-                  id='password'
-                  value={password}
-                  onChange={onChange}
-                />
-                <img
-                  src={visibilityIcon}
-                  alt='show password'
-                  className='showPassword'
-                  style={{ opacity: showPassword ? 1 : 0.5}}
-                  onClick={() => setShowPassword((prevState) => !prevState)}
-                />
-              </div>
-              <Link to='/forgot-password' className='forgotPasswordLink'>
-                Forgot Password?
-              </Link>
-
-              <div className="signInBar">
-                <p className="signInText">
-                  Sign In
-                </p>
-                <button className="signInButton">
-                  <ArrowRightIcon fill='#fff' width='34px' height='34px' />
-                </button>
-              </div>
-            </form>
-            {/* Google OAuth */}
-            <Link to='/sign-up' className='registerLink'>
-              Register Instead
+              <img
+                src={visibilityIcon}
+                alt='show password'
+                className='showPassword'
+                style={{ opacity: showPassword ? 1 : 0.5 }}
+                onClick={() => setShowPassword((prevState) => !prevState)}
+              />
+            </div>
+            <Link
+              to='/forgot-password'
+              className='forgotPasswordLink'>
+              Forgot Password?
             </Link>
+
+            <div className='signInBar'>
+              <p className='signInText'>Sign In</p>
+              <button className='signInButton'>
+                <ArrowRightIcon
+                  fill='#fff'
+                  width='34px'
+                  height='34px'
+                />
+              </button>
+            </div>
+          </form>
+          {/* Google OAuth */}
+          <Link
+            to='/sign-up'
+            className='registerLink'>
+            Register Instead
+          </Link>
         </header>
       </div>
     </>
