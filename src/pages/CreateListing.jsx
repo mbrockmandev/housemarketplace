@@ -28,6 +28,22 @@ function CreateListing() {
     longitude: 0,
   });
 
+  const {
+    type,
+    name,
+    bedrooms,
+    bathrooms,
+    parking,
+    furnished,
+    address,
+    offer,
+    regularPrice,
+    discountedPrice,
+    images,
+    latitude,
+    longitude,
+  } = formData;
+
   const auth = getAuth();
   const navigate = useNavigate();
   const isMounted = useRef(true);
@@ -48,9 +64,87 @@ function CreateListing() {
     };
   }, [isMounted]);
 
+  const onSubmit = (e) => { 
+    e.preventDefault()
+   }
+
+   const onMutate = (e) => {
+    // 
+    }
+
   if (loading) {
     return <Spinner />;
   }
-  return <div>CreateListing</div>;
+  return <div className='profile'>
+    <header>
+    <p class="pageHeader">Create a Listing</p>
+    </header>
+    <main>
+      <form onSubmit={onSubmit}>
+        <label className='formLabel'>Sell / Rent</label>
+        <div className="formButtons">
+          <button 
+            type='button' 
+            className={type === 'sale' ? 'formButtonActive' : 'formButton'} 
+            id='type'
+            value='sale'
+            onClick={onMutate}
+          >
+            Sell
+          </button>
+          <button 
+            type='button' 
+            className={type === 'rent' ? 'formButtonActive' : 'formButton'} 
+            id='type'
+            value='rent'
+            onClick={onMutate}
+          >
+            Rent
+          </button>
+        </div>
+        <input 
+            className='formInputName'
+            type='button' 
+            id='name'
+            value={name}
+            onChange={onMutate}
+            maxLength='32'
+            minLength='10'
+            required
+        />
+        <div className="formRooms flex">
+          <div>
+            <label className="formLabel">Bedrooms</label>
+            <input 
+              className='formInputSmall' 
+              type="number" 
+              id='bedrooms' 
+              value={bedrooms} 
+              onChange={onMutate} 
+              min='1' 
+              max='50' 
+              required
+            />
+          </div>
+          <div>
+            <label className="formLabel">Bathrooms</label>
+            <input 
+              className='formInputSmall' 
+              type="number" 
+              id='bathrooms' 
+              value={bathrooms} 
+              onChange={onMutate} 
+              min='1' 
+              max='50' 
+              required
+            />
+          </div>
+        </div>
+          
+
+      </form>
+    </main>
+
+  </div>;
 }
 export default CreateListing;
