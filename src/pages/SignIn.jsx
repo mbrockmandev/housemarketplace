@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import OAuth from '../components/OAuth';
 import { ReactComponent as ArrowRightIcon } from '../assets/svg/keyboardArrowRightIcon.svg';
 import visibilityIcon from '../assets/svg/visibilityIcon.svg';
 
@@ -39,7 +40,7 @@ const SignIn = () => {
         navigate('/');
       }
     } catch (error) {
-      toast.error('Incorrect User Credentials.')
+      toast.error('Incorrect User Credentials.');
     }
   };
 
@@ -92,7 +93,7 @@ const SignIn = () => {
               </button>
             </div>
           </form>
-          {/* Google OAuth */}
+          <OAuth />
           <Link
             to='/sign-up'
             className='registerLink'>
