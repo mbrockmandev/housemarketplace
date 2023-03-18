@@ -5,6 +5,8 @@ import {useNavigate} from 'react-router-dom';
 import Spinner from '../components/Spinner';
 import {toast} from 'react-toastify';
 import {v4 as uuidv4} from 'uuid';
+import {addDoc, collection, serverTimestamp} from 'firebase/firestore';
+import {db} from '../firebase.config';
 
 function CreateListing() {
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
@@ -110,7 +112,7 @@ function CreateListing() {
       return new Promise((resolve, reject) => {
         const storage = getStorage();
         const fileName = `${auth.currentUser.uid}-${image.name}-${uuidv4()}`;
-        const storageRef = ref(storage, 'images/' + fileName);
+        const storageRef = ref(storage, `images/${fileName}`);
         const uploadTask = uploadBytesResumable(storageRef, image);
         uploadTask.on('state_changed',
           (snapshot) => {
@@ -147,9 +149,21 @@ function CreateListing() {
         return;
       });
 
-    console.log(imageURLs);
+    // console.log(imageURLs);
+    const formDataCopy = {
+      ...formData, imageURLs, geolocation,
+      timestamp: serverTimestamp()
+    };
 
+    delete formDataCopy.images;
+    delete formDataCopy.address;
+    location && (formDataCopy.location = location);
+    !formDataCopy.offer && delete formDataCopy.discountedPrice;
+
+    const docRef = await addDoc(collection(db, 'listings'), formDataCopy);
     setLoading(false);
+    toast.success('Listing created!');
+    navigate(`/category/${formDataCopy.type}/${docRef.id}`);
   };
 
   const onMutate = (e) => {
